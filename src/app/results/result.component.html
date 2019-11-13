@@ -1,0 +1,225 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-12">
+                <!-- Card showing the specific result -->
+                <div class="card">
+                    <div class="card-header card-header-danger">
+                        <h4 class="card-title text-center">--- Results ---</h4>
+                    </div>
+
+                    <!-- Search bar -->
+                    <div class="card-body" *ngIf="isShowSearch.valueOf()">
+                        <form class="navbar-form">
+                            <div class="row sub-div">
+                                <div class="input-group no-border col-md-4">
+                                    <input type="text" value="" class="form-control" placeholder="Search...">
+                                    <button mat-raised-button type="submit"
+                                            class="btn btn-white btn-round btn-just-icon">
+                                        <i class="material-icons">search</i>
+                                        <div class="ripple-container"></div>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Individual result display -->
+                        <div class="alert" *ngIf="isShowResult.valueOf()">
+                            <button mat-raised-button type="button" matTooltip="Close"
+                                    [matTooltipPosition]="'above'"
+                                    class="btn btn-danger btn-link btn-sm btn-just-icon close"
+                                    data-dismiss="alert" aria-label="Close" (click)="closeResult()">
+                                <i class="material-icons">close</i>
+                            </button>
+                            <br/>
+                            <div class="font-weight-bold text-info font-weight-bold text-center">
+                                <a> ASD classification result for the patient(ID) :{{showingResult.id}}</a>
+                            </div>
+                            <br/>
+                            <div class="card-avatar text-center">
+                                <p>
+                                    <a href="javascript:void(0)">
+                                        <img class="img" src="./assets/img/faces/marc.jpg"/>
+                                    </a>
+                                </p>
+                            </div>
+
+                            <div *ngIf="isUnsavedResult.valueOf()">
+                                <!-- Check box for new classification result -->
+                                <div class="row file-check">
+                                    <label class="form-check-label text-black-50 font-weight-bold">
+                                        <input id="needNewPatient" [(ngModel)]="newPatient" class="form-check-input"
+                                               type="checkbox">
+                                        <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
+                                        Save as a new patient?
+                                    </label>
+                                </div>
+
+                                <!-- Section to save for a new Patient -->
+                                <div *ngIf="newPatient.valueOf()">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput placeholder="Name" type="text">
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput placeholder="Age" type="text">
+                                            </mat-form-field>
+                                        </div>
+                                        <mat-form-field class="col-md-4">
+                                            <mat-placeholder>Gender</mat-placeholder>
+                                            <mat-select>
+                                                <mat-option value="Male">Male</mat-option>
+                                                <mat-option value="Female">Female</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <button mat-raised-button class="btn btn-warning btn-block col-md-2">
+                                        Save
+                                    </button>
+                                </div>
+
+                                <!-- Save for an existing patient -->
+                                <div id="patientHandle" *ngIf="!newPatient.valueOf()">
+                                    <mat-label class="text-danger font-weight-bold">Select the patient ID to save the
+                                        result !
+                                    </mat-label>
+                                    <mat-form-field class="col-md-2">
+                                        <mat-placeholder>Patient ID</mat-placeholder>
+                                        <mat-select [formControl]="patientControl">
+                                            <mat-option *ngFor="let id of patientIds" [value]="id">
+                                                {{id}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <span>
+                                    </span>
+                                        <mat-error *ngIf="patientControl.hasError('required')">Choose ID*
+                                        </mat-error>
+                                        <!--                                <mat-hint>{{animalControl.value?.sound}}</mat-hint>-->
+                                    </mat-form-field>
+                                    <button mat-raised-button class="btn btn-warning btn-block col-md-2">
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Result Table -->
+                        <div class="table-responsive">
+                            <table class="table" *ngIf="results.length!==0">
+                                <thead class="text-primary text-center">
+                                <th class="col-md-1"> ID</th>
+                                <th class="col-md-2"> Patient ID</th>
+                                <th class="col-md-1"> EEG ID</th>
+                                <th> Result</th>
+                                <th> Date</th>
+                                <th> Actions</th>
+                                </thead>
+                                <tbody class="text-center" *ngFor="let result of results">
+                                <tr>
+                                    <td>{{result.id}}</td>
+                                    <td>{{result.subjectId}}</td>
+                                    <td>{{result.eegId}}</td>
+                                    <td>{{result.result}}</td>
+                                    <td>{{result.dateOfTaken}}</td>
+                                    <td class="text-primary">
+                                        <button mat-raised-button type="button" matTooltip="Show Results"
+                                                [matTooltipPosition]="'above'" (click)="onViewResult(result)"
+                                                class="btn btn-primary btn-link btn-sm btn-just-icon">
+                                            <i class="material-icons">visibility</i>
+                                        </button>
+
+                                        <button mat-raised-button type="button" matTooltip="Delete"
+                                                [matTooltipPosition]="'above'" (click)="onDeleteClick(result)"
+                                                class="btn btn-danger btn-link btn-sm btn-just-icon">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <!--                <div class="col-md-12">-->
+                <!--                    <div class="card card-plain">-->
+                <!--                        <div class="card-header card-header-danger">-->
+                <!--                            <h4 class="card-title mt-0"> Table on Plain Background</h4>-->
+                <!--                            <p class="card-category"> Here is a subtitle for this table</p>-->
+                <!--                        </div>-->
+                <!--                        <div class="card-body">-->
+                <!--                            <div class="table-responsive">-->
+                <!--                                <table class="table table-hover">-->
+                <!--                                    <thead class="">-->
+                <!--                                    <th> ID</th>-->
+                <!--                                    <th> Name</th>-->
+                <!--                                    <th> Country</th>-->
+                <!--                                    <th> City</th>-->
+                <!--                                    <th> Salary</th>-->
+                <!--                                    </thead>-->
+                <!--                                    <tbody>-->
+                <!--                                    <tr>-->
+                <!--                                        <td> 1</td>-->
+                <!--                                        <td> Dakota Rice</td>-->
+                <!--                                        <td> Niger</td>-->
+                <!--                                        <td> Oud-Turnhout</td>-->
+                <!--                                        <td> $36,738</td>-->
+                <!--                                    </tr>-->
+                <!--                                    <tr>-->
+                <!--                                        <td> 2</td>-->
+                <!--                                        <td> Minerva Hooper</td>-->
+                <!--                                        <td> Curaçao</td>-->
+                <!--                                        <td> Sinaai-Waas</td>-->
+                <!--                                        <td> $23,789</td>-->
+                <!--                                    </tr>-->
+                <!--                                    <tr>-->
+                <!--                                        <td> 3</td>-->
+                <!--                                        <td> Sage Rodriguez</td>-->
+                <!--                                        <td> Netherlands</td>-->
+                <!--                                        <td> Baileux</td>-->
+                <!--                                        <td> $56,142</td>-->
+                <!--                                    </tr>-->
+                <!--                                    <tr>-->
+                <!--                                        <td> 4</td>-->
+                <!--                                        <td> Philip Chaney</td>-->
+                <!--                                        <td> Korea, South</td>-->
+                <!--                                        <td> Overland Park</td>-->
+                <!--                                        <td> $38,735</td>-->
+                <!--                                    </tr>-->
+                <!--                                    <tr>-->
+                <!--                                        <td> 5</td>-->
+                <!--                                        <td> Doris Greene</td>-->
+                <!--                                        <td> Malawi</td>-->
+                <!--                                        <td> Feldkirchen in Kärnten</td>-->
+                <!--                                        <td> $63,542</td>-->
+                <!--                                    </tr>-->
+                <!--                                    <tr>-->
+                <!--                                        <td> 6</td>-->
+                <!--                                        <td> Mason Porter</td>-->
+                <!--                                        <td> Chile</td>-->
+                <!--                                        <td> Gloucester</td>-->
+                <!--                                        <td> $78,615</td>-->
+                <!--                                    </tr>-->
+                <!--                                    </tbody>-->
+                <!--                                </table>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
