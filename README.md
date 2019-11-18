@@ -122,8 +122,8 @@ material-dashboard-angular
 │   │   ├── icons
 │   │   │   ├── icons.component.css
 │   │   │   ├── icons.component.html
-│   │   │   ├── icons.component.spec.ts
-│   │   │   └── icons.component.ts
+│   │   │   ├── eeg.component.spec.ts
+│   │   │   └── eeg.component.ts
 │   │   ├── layouts
 │   │   │   └── admin-layout
 │   │   │       ├── admin-layout.component.html

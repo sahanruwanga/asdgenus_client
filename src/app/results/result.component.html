@@ -5,8 +5,8 @@
             <div class="col-md-12">
                 <!-- Card showing the specific result -->
                 <div class="card">
-                    <div class="card-header card-header-danger">
-                        <h4 class="card-title text-center">--- Results ---</h4>
+                    <div class="card-header card-header-info">
+                        <h4 class="card-title text-center text-black-50 font-weight-bold">Results</h4>
                     </div>
 
                     <!-- Search bar -->
@@ -35,14 +35,17 @@
                                 <i class="material-icons">close</i>
                             </button>
                             <br/>
-                            <div class="font-weight-bold text-info font-weight-bold text-center">
-                                <a> ASD classification result for the patient(ID) :{{showingResult.id}}</a>
+                            <div class="font-weight-bold text-black-50 text-center" *ngIf="!isUnsavedResult.valueOf()">
+                                <h4 class="font-weight-bold text-black-50"> ASD classification result for the patient(ID) :{{showingResult.subjectId}}</h4>
+                            </div>
+                            <div class="font-weight-bold text-black-50 text-center" *ngIf="isUnsavedResult.valueOf()">
+                                <h4 class="font-weight-bold text-black-50">Showing result is not yet saved! Save from below not to lost!</h4>
                             </div>
                             <br/>
                             <div class="card-avatar text-center">
                                 <p>
                                     <a href="javascript:void(0)">
-                                        <img class="img" src="./assets/img/faces/marc.jpg"/>
+                                        <img class="img" src="{{resultImage}}" height="400" width="650"/>
                                     </a>
                                 </p>
                             </div>
@@ -51,8 +54,8 @@
                                 <!-- Check box for new classification result -->
                                 <div class="row file-check">
                                     <label class="form-check-label text-black-50 font-weight-bold">
-                                        <input id="needNewPatient" [(ngModel)]="newPatient" class="form-check-input"
-                                               type="checkbox">
+                                        <input id="needNewPatient" [(ngModel)]="isNewPatient" class="form-check-input"
+                                               type="checkbox" [checked]="patientIds.length == 0">
                                         <span class="form-check-sign">
                                         <span class="check"></span>
                                     </span>
@@ -61,41 +64,50 @@
                                 </div>
 
                                 <!-- Section to save for a new Patient -->
-                                <div *ngIf="newPatient.valueOf()">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <mat-form-field class="example-full-width">
-                                                <input matInput placeholder="Name" type="text">
+                                <div *ngIf="isNewPatient.valueOf()">
+                                    <form [formGroup]="newPatientDetailsControl">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <mat-form-field class="example-full-width">
+                                                    <input matInput placeholder="Name" type="text"
+                                                           [(ngModel)]="newSubjectName"
+                                                           formControlName="name">
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <mat-form-field class="example-full-width">
+                                                    <input matInput placeholder="Age" type="number"
+                                                           [(ngModel)]="newSubjectAge"
+                                                           formControlName="age">
+                                                </mat-form-field>
+                                            </div>
+                                            <mat-form-field class="col-md-4">
+                                                <mat-placeholder>Gender</mat-placeholder>
+                                                <mat-select [(ngModel)]="newSubjectGender" formControlName="gender">
+                                                    <mat-option value="Male">Male</mat-option>
+                                                    <mat-option value="Female">Female</mat-option>
+                                                </mat-select>
                                             </mat-form-field>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <mat-form-field class="example-full-width">
-                                                <input matInput placeholder="Age" type="text">
-                                            </mat-form-field>
-                                        </div>
-                                        <mat-form-field class="col-md-4">
-                                            <mat-placeholder>Gender</mat-placeholder>
-                                            <mat-select>
-                                                <mat-option value="Male">Male</mat-option>
-                                                <mat-option value="Female">Female</mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                    <button mat-raised-button class="btn btn-warning btn-block col-md-2">
-                                        Save
-                                    </button>
+                                        <button mat-raised-button
+                                                class="btn btn-success btn-block col-md-2 text-black-50 font-weight-bold"
+                                                (click)="onSaveForNewSubject()"
+                                                [disabled]="!newPatientDetailsControl.valid">
+                                            Save
+                                        </button>
+                                    </form>
                                 </div>
 
                                 <!-- Save for an existing patient -->
-                                <div id="patientHandle" *ngIf="!newPatient.valueOf()">
-                                    <mat-label class="text-danger font-weight-bold">Select the patient ID to save the
+                                <div id="patientHandle" *ngIf="!isNewPatient.valueOf() && patientIds.length != 0">
+                                    <mat-label class="text-black-50 font-weight-bold font-weight-bold">Select the patient ID to save the
                                         result !
                                     </mat-label>
                                     <mat-form-field class="col-md-2">
                                         <mat-placeholder>Patient ID</mat-placeholder>
-                                        <mat-select [formControl]="patientControl">
+                                        <mat-select [formControl]="patientControl" [(ngModel)]="selectedSubjectId">
                                             <mat-option *ngFor="let id of patientIds" [value]="id">
                                                 {{id}}
                                             </mat-option>
@@ -104,9 +116,10 @@
                                     </span>
                                         <mat-error *ngIf="patientControl.hasError('required')">Choose ID*
                                         </mat-error>
-                                        <!--                                <mat-hint>{{animalControl.value?.sound}}</mat-hint>-->
                                     </mat-form-field>
-                                    <button mat-raised-button class="btn btn-warning btn-block col-md-2">
+                                    <button mat-raised-button
+                                            class="btn btn-success btn-block col-md-2 text-black-50 font-weight-bold"
+                                            (click)="onSaveForExistingSubject()">
                                         Save
                                     </button>
                                 </div>
@@ -119,7 +132,7 @@
                                 <thead class="text-primary text-center">
                                 <th class="col-md-1"> ID</th>
                                 <th class="col-md-2"> Patient ID</th>
-                                <th class="col-md-1"> EEG ID</th>
+                                <th class="col-md-2"> EEG ID</th>
                                 <th> Result</th>
                                 <th> Date</th>
                                 <th> Actions</th>

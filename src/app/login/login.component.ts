@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {User} from '../models/user';
 import {AuthenticationService} from '../services/authentication.service';
+import {Result} from '../models/result';
 
 @Component({
     selector: 'app-login',
@@ -16,7 +17,9 @@ export class LoginComponent implements OnInit {
     isError = false;
 
     constructor(private formBuilder: FormBuilder, private router: Router, private authenticationService: AuthenticationService) {
-        this.requestHomeNavigation(Number(localStorage.getItem('uid')));
+        if (localStorage.getItem('uid') !== '0') {
+            this.router.navigate(['home']);
+        }
         this.isError = false;
     }
 
@@ -30,15 +33,17 @@ export class LoginComponent implements OnInit {
     onLoginFromSubmit() {
         this.authenticationService.login(this.user)
             .subscribe(res => {
-                localStorage.setItem('uid', res);
-                this.requestHomeNavigation(res);
+                const user = <User>res;
+                this.requestHomeNavigation(user);
             }, (err) => {
             });
     }
 
-    requestHomeNavigation(uid: number) {
+    requestHomeNavigation(user: User) {
 
-        if (this.authenticationService.isLoggedIn && uid !== 0) {
+        if (this.authenticationService.isLoggedIn && user !== null) {
+            localStorage.setItem('uid', String(user.id));
+            localStorage.setItem('username', user.name);
             this.router.navigate(['home']);
             this.isError = false;
         } else {

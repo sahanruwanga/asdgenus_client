@@ -1,8 +1,8 @@
 <div class="main-content">
     <div class="container-fluid">
         <div class="card">
-            <div class="card-header card-header-danger">
-                <h4 class="card-title text-center">--- Patients ---</h4>
+            <div class="card-header card-header-info">
+                <h4 class="card-title text-center text-black-50 font-weight-bold">Patients</h4>
             </div>
 
             <!-- Search bar -->
@@ -12,12 +12,13 @@
                         <div class="input-group no-border col-md-4">
                             <input type="text" value="" class="form-control" placeholder="Search...">
                             <button mat-raised-button type="submit"
-                                    class="btn btn-white btn-round btn-just-icon">
+                                    class="btn btn-white btn-round btn-just-icon" (click)="doSearch()">
                                 <i class="material-icons">search</i>
                                 <div class="ripple-container"></div>
                             </button>
                         </div>
-                        <button mat-raised-button class="btn btn-info btn-block col-md-2"
+                        <button mat-raised-button
+                                class="btn btn-info btn-success col-md-2 text-black-50 font-weight-bold"
                                 (click)="onAddNewPatient()">
                             Add New
                         </button>
@@ -31,7 +32,7 @@
                     <button mat-raised-button type="button" matTooltip="Close"
                             [matTooltipPosition]="'above'"
                             class="btn btn-danger btn-link btn-sm btn-just-icon close"
-                            data-dismiss="alert" aria-label="Close" (click)="closeAddNew()">
+                            data-dismiss="alert" aria-label="Close" (click)="onCloseAddNew()">
                         <i class="material-icons">close</i>
                     </button>
                     <br/>
@@ -39,7 +40,7 @@
                     <!-- Section to enter patient details -->
                     <form [formGroup]="patientDetailsForm">
                         <div>
-                            <p class="text-info">Add New Patient !</p>
+                            <p class="text-black-50 font-weight-bold">Add New Patient</p>
                             <div class="row">
                                 <div class="col-md-10">
                                     <mat-form-field class="example-full-width">
@@ -51,7 +52,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <mat-form-field class="example-full-width">
-                                        <input matInput placeholder="Age" type="text"
+                                        <input matInput placeholder="Age" type="number"
                                                [(ngModel)]="newPatient.age" formControlName="age">
                                     </mat-form-field>
                                 </div>
@@ -63,7 +64,8 @@
                                     </mat-select>
                                 </mat-form-field>
                             </div>
-                            <button mat-raised-button class="btn btn-warning btn-block col-md-2"
+                            <button mat-raised-button
+                                    class="btn btn-success btn-block col-md-2 text-black-50 font-weight-bold"
                                     (click)="onSaveNewPatient()" [disabled]="!patientDetailsForm.valid">
                                 Save
                             </button>
@@ -76,7 +78,7 @@
                     <button mat-raised-button type="button" matTooltip="Close"
                             [matTooltipPosition]="'above'"
                             class="btn btn-danger btn-link btn-sm btn-just-icon close"
-                            data-dismiss="alert" aria-label="Close" (click)="closeView()">
+                            data-dismiss="alert" aria-label="Close" (click)="onCloseUpdatePatient()">
                         <i class="material-icons">close</i>
                     </button>
                     <br/>
@@ -84,7 +86,7 @@
                     <!-- Section to edit patient details -->
                     <form [formGroup]="patientDetailsForm">
                         <div>
-                            <p class="text-info">Updating Patient (ID) : {{updateTempPatient.id}}</p>
+                            <p class="text-black-50 font-weight-bold">Updating Patient (ID) : {{updateTempPatient.id}}</p>
                             <div class="row">
                                 <div class="col-md-10">
                                     <mat-form-field class="example-full-width">
@@ -96,7 +98,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <mat-form-field class="example-full-width">
-                                        <input matInput placeholder="Age" type="text"
+                                        <input matInput placeholder="Age" type="number"
                                                [(ngModel)]="updateTempPatient.age" formControlName="age">
                                     </mat-form-field>
                                 </div>
@@ -108,7 +110,8 @@
                                     </mat-select>
                                 </mat-form-field>
                             </div>
-                            <button mat-raised-button class="btn btn-warning btn-block col-md-2"
+                            <button mat-raised-button
+                                    class="btn btn-success btn-block col-md-2 text-black-50 font-weight-bold"
                                     (click)="onUpdatePatient()" [disabled]="!patientDetailsForm.valid">
                                 Update
                             </button>

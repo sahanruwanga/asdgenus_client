@@ -8,8 +8,8 @@ import {User} from '../models/user';
 import {RegisterComponent} from '../register/register.component';
 
 
-// const apiUrl = '/';
-const apiUrl = 'http://localhost:8080/';
+const apiUrl = '/';
+// const apiUrl = 'http://localhost:8080/';
 
 @Injectable({
     providedIn: 'root'

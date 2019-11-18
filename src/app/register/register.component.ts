@@ -14,7 +14,7 @@ export class RegisterComponent implements OnInit {
     registerForm: FormGroup;
     user: User = new User(0, '', '', '');
     isEmailDuplicate: false;
-    private isError = false;
+    isError = false;
 
     constructor(private formBuilder: FormBuilder, private router: Router, private authenticationService: AuthenticationService) {
         if (localStorage.getItem('uid') !== '0') {
@@ -34,7 +34,6 @@ export class RegisterComponent implements OnInit {
     onFormSubmit() {
         this.authenticationService.register(this.user)
             .subscribe(res => {
-                console.log(res);
                 this.requestLoginNavigation(res);
             }, (err) => {
                 console.log(err);

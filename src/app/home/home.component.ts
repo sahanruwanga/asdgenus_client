@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import * as Chartist from 'chartist';
 import {FileService} from '../services/file.service';
 import {ClassificationService} from '../services/classification.service';
 import {Result} from '../models/result';
-import {Router} from '@angular/router';
+import {NavigationExtras, Router} from '@angular/router';
+import {Eeg} from '../models/eeg';
+import {HttpEventType} from '@angular/common/http';
 
 @Component({
     selector: 'app-home',
@@ -14,7 +15,8 @@ export class HomeComponent implements OnInit {
 
     files: File[];
     isSelectionValid = false;
-    isUploadValid = false;
+    isUploadSuccess = false;
+    isClassifyButtonShow = false;
     vhdrOk = false;
     eegOk = false;
     vmrkOk = false;
@@ -22,6 +24,12 @@ export class HomeComponent implements OnInit {
     eegName: string;
     vhdrName: string;
     vmrkName: string;
+    eeg: Eeg;
+    newResult: Result;
+    eegSignalLocation: string;
+    isResultLoading = false;
+    isUploading = false;
+    uploadingPercentage: number;
 
     constructor(private fileService: FileService,
                 private classificationService: ClassificationService,
@@ -30,145 +38,15 @@ export class HomeComponent implements OnInit {
         if (localStorage.getItem('uid') === '0') {
             this.router.navigate(['login']);
         }
+
+        if (localStorage.getItem('classifying') === 'false') {
+            this.isResultLoading = false;
+        } else if (localStorage.getItem('classifying') === 'true') {
+            this.isResultLoading = true;
+        }
     }
 
-    startAnimationForLineChart(chart) {
-        let seq: any, delays: any, durations: any;
-        seq = 0;
-        delays = 80;
-        durations = 500;
-
-        chart.on('draw', function (data) {
-            if (data.type === 'line' || data.type === 'area') {
-                data.element.animate({
-                    d: {
-                        begin: 600,
-                        dur: 700,
-                        from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
-                        to: data.path.clone().stringify(),
-                        easing: Chartist.Svg.Easing.easeOutQuint
-                    }
-                });
-            } else if (data.type === 'point') {
-                seq++;
-                data.element.animate({
-                    opacity: {
-                        begin: seq * delays,
-                        dur: durations,
-                        from: 0,
-                        to: 1,
-                        easing: 'ease'
-                    }
-                });
-            }
-        });
-
-        seq = 0;
-    };
-
-    startAnimationForBarChart(chart) {
-        let seq2: any, delays2: any, durations2: any;
-
-        seq2 = 0;
-        delays2 = 80;
-        durations2 = 500;
-        chart.on('draw', function (data) {
-            if (data.type === 'bar') {
-                seq2++;
-                data.element.animate({
-                    opacity: {
-                        begin: seq2 * delays2,
-                        dur: durations2,
-                        from: 0,
-                        to: 1,
-                        easing: 'ease'
-                    }
-                });
-            }
-        });
-
-        seq2 = 0;
-    };
-
     ngOnInit() {
-        /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
-
-        const dataDailySalesChart: any = {
-            labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-            series: [
-                [12, 17, 7, 17, 23, 18, 38]
-            ]
-        };
-
-        const optionsDailySalesChart: any = {
-            lineSmooth: Chartist.Interpolation.cardinal({
-                tension: 0
-            }),
-            low: 0,
-            high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-            chartPadding: {top: 0, right: 0, bottom: 0, left: 0},
-        }
-
-        var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
-
-        this.startAnimationForLineChart(dailySalesChart);
-
-
-        /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
-
-        const dataCompletedTasksChart: any = {
-            labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
-            series: [
-                [230, 750, 450, 300, 280, 240, 200, 190]
-            ]
-        };
-
-        const optionsCompletedTasksChart: any = {
-            lineSmooth: Chartist.Interpolation.cardinal({
-                tension: 0
-            }),
-            low: 0,
-            high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-            chartPadding: {top: 0, right: 0, bottom: 0, left: 0}
-        }
-
-        var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
-
-        // start animation for the Completed Tasks Chart - Line Chart
-        this.startAnimationForLineChart(completedTasksChart);
-
-
-        /* ----------==========     Emails Subscription Chart initialization    ==========---------- */
-
-        var datawebsiteViewsChart = {
-            labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-            series: [
-                [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
-
-            ]
-        };
-        var optionswebsiteViewsChart = {
-            axisX: {
-                showGrid: false
-            },
-            low: 0,
-            high: 1000,
-            chartPadding: {top: 0, right: 5, bottom: 0, left: 0}
-        };
-        var responsiveOptions: any[] = [
-            ['screen and (max-width: 640px)', {
-                seriesBarDistance: 5,
-                axisX: {
-                    labelInterpolationFnc: function (value) {
-                        return value[0];
-                    }
-                }
-            }]
-        ];
-        var websiteViewsChart = new Chartist.Bar('#websiteViewsChart', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
-
-        //start animation for the Emails Subscription Chart
-        this.startAnimationForBarChart(websiteViewsChart);
     }
 
     onFilesAdded(event) {
@@ -213,28 +91,86 @@ export class HomeComponent implements OnInit {
         this.vmrkName = '';
     }
 
-    uploadFile() {
-        // this.fileService.upload(this.files);
-        console.log(this.files);
-        this.isUploadValid = true;
+    uploadEEG() {
+
+        this.isUploadSuccess = false;
+        this.isUploading = false;
+        this.isSelectionValid = false;
+        this.fileService.uploadEEG(this.files)
+            .subscribe(event => {
+                if (event.type === HttpEventType.UploadProgress) {
+                    this.uploadingPercentage = Math.round((event.loaded / event.total) * 100);
+                    this.isUploading = true;
+                } else if (event.type === HttpEventType.Response) {
+                    this.isUploading = false;
+                    if (this.fileService.isUploaded) {
+                        this.postUploadEEG(<Eeg>event.body);
+                    }
+                }
+            });
+        // .subscribe(response => {
+        //     if (this.fileService.isUploaded) {
+        //         this.postUploadEEG(<Eeg>response);
+        //     }
+        // }, error => {
+        //     console.log(error);
+        // });
+    }
+
+    postUploadEEG(eeg: Eeg) {
+
+        this.eeg = eeg;
+        this.eegSignalLocation = eeg.signalLocation;
+        this.isUploadSuccess = true;
+        this.isClassifyButtonShow = true;
+        this.isSelectionValid = true;
+        this.fileService.isUploaded = false;
     }
 
     doClassify() {
-        this.classificationService.clasiify('/home/sahan/Documents/Projects/FYP/asdgenus/' +
-            'C:/Users/Sahan/Desktop/ADOS_Mod30008.vhdr')
-            .subscribe(res => {
-                const result = <Result>res;
-                console.log(result);
-                this.requestResultNavigatin(result);
-            }, (err) => {
-                console.log(err);
-                alert(err.error);
-            });
+
+        this.isClassifyButtonShow = false;
+        if (this.eeg !== null) {
+            this.classificationService.classify(this.eeg.dataLocation)
+                .subscribe(event => {
+                    if (event.type === HttpEventType.UploadProgress) {
+                        this.isResultLoading = true;
+                        localStorage.setItem('classifying', 'true');
+                    } else if (event.type === HttpEventType.Response) {
+                        this.isResultLoading = false;
+                        localStorage.setItem('classifying', 'false');
+                        if (this.classificationService.isClassified) {
+                            this.newResult = <Result>(event.body);
+                            this.isClassifyButtonShow = true;
+                            this.requestResultNavigation(this.newResult);
+                        }
+                    }
+                });
+            // if (this.classificationService.isClassificationError) {
+            //     this.isResultLoading = false;
+            //     localStorage.setItem('classifying', 'false');
+            // }
+        }
+        // .subscribe(res => {
+        //     this.newResult = <Result>res;
+        //     this.requestResultNavigatin(this.newResult);
+        // }, (err) => {
+        //     console.log(err);
+        // });
     }
 
-    requestResultNavigatin(result: Result) {
-        if (result != null && this.classificationService.isClassified) {
-            this.router.navigate(['result', {'fromClassification': 'true'}]);
-        }
+    requestResultNavigation(result: Result) {
+
+        this.classificationService.isClassified = false;
+        this.router.navigate(['result', {'fromClassification': 'true'}], this.getParsingObjects());
+    }
+
+    getParsingObjects(): NavigationExtras {
+        return {
+            queryParams: {
+                'eeg': JSON.stringify(this.eeg),
+                'result': JSON.stringify(this.newResult)
+            }
+        };
     }
 }

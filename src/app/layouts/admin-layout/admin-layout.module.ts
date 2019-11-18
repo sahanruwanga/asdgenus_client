@@ -7,10 +7,8 @@ import { HomeComponent } from '../../home/home.component';
 import { UserProfileComponent } from '../../user-profile/user-profile.component';
 import { ResultComponent } from '../../results/result.component';
 import { PatientComponent } from '../../patient/patient.component';
-import { IconsComponent } from '../../icons/icons.component';
-import { MapsComponent } from '../../maps/maps.component';
+import { EegComponent } from '../../eeg/eeg.component';
 import { ThermalComponent } from '../../thermal/thermal.component';
-import { UpgradeComponent } from '../../upgrade/upgrade.component';
 
 import {
   MatButtonModule,
@@ -40,10 +38,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     UserProfileComponent,
     ResultComponent,
     PatientComponent,
-    IconsComponent,
-    MapsComponent,
+    EegComponent,
     ThermalComponent,
-    UpgradeComponent,
   ]
 })
 

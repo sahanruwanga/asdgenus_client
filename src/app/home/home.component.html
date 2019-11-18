@@ -1,576 +1,620 @@
 <div class="main-content">
     <div class="container-fluid">
+        <div class="row" *ngIf="!isResultLoading.valueOf()">
 
-        <div class="card-topic">
-            <h2 class="card-title text-center text-white">Classify ASD</h2>
-        </div>
-
-        <div class="home-m1 text-info text-center">
-            <h5>Provide all three files ('.vhdr', '.eeg', '.vkmr') for prediction using EEG data!</h5>
-        </div>
-
-        <!-- File check boxes -->
-        <div class="tab-pane active" id="fileCheck">
-            <table class="table">
-                <tbody>
-                <tr>
-                    <td>
-                        <div class="file-check">
-                            <label class="form-check-label">
-                                <input id="vhdrCheck" class="form-check-input" type="checkbox"
-                                       [checked]="vhdrOk" onclick="return false;">
-                                <span class="form-check-sign">
-                        <span class="check"></span>
-                    </span>
-                                .vhdr ({{vhdrName}})
-                            </label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="file-check">
-                            <label class="form-check-label">
-                                <input id="eegCheck" class="form-check-input" type="checkbox"
-                                       [checked]="eegOk" onclick="return false;">
-                                <span class="form-check-sign">
-                        <span class="check"></span>
-                    </span>
-                                .eeg ({{eegName}})
-                            </label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="file-check">
-                            <label class="form-check-label">
-                                <input id="vmkrCheck" class="form-check-input" type="checkbox"
-                                       [checked]="vmrkOk" onclick="return false;">
-                                <span class="form-check-sign">
-                        <span class="check"></span>
-                    </span>
-                                .vmkr ({{vmrkName}})
-                            </label>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Three buttons -->
-        <div class="row">
-            <!--            <div class="col-lg-8 col-md-10 ml-auto mr-auto">-->
-            <div class="col-lg-8 col-md-2 ml-auto mr-auto">
-                <div class="row">
-                    <div class="col-md-4">
-                        <input
-                                type="file"
-                                #file
-                                style="display: none"
-                                (change)="onFilesAdded($event)"
-                                multiple
-                        />
-                        <button mat-raised-button class="btn btn-danger btn-block" (click)="file.click()">Add File(s)
-                        </button>
-                    </div>
-                    <div class="col-md-4">
-                        <button mat-raised-button class="btn btn-danger btn-block" [disabled]="!isSelectionValid"
-                                (click)="uploadFile()">Upload
-                        </button>
-                    </div>
-                    <div class="col-md-4">
-                        <button mat-raised-button class="btn btn-danger btn-block" [disabled]="!isUploadValid"
-                                (click)="doClassify()">Classify
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Crad to show the uploaded result -->
-        <div class="container-fluid">
-            <div class="card">
-                <!--                <div class="card-header card-header-danger">-->
-                <!--                    <h4 class="card-title" >Your data has been uploaded successfully!</h4>-->
-                <!--                    <p class="card-category">Created using Roboto Font Family</p>-->
-                <!--                </div>-->
-                <div class="card-body">
-                    <div *ngIf="isUploadValid.valueOf()">
-                        <div>
-                            <div class="card-title text-success text-center">
-                                <h4>Your data has been uploaded successfully!</h4>
-                            </div>
-                        </div>
-                        <div class="card-avatar text-center">
-                            <a href="javascript:void(0)">
-                                <img class="img" src="./assets/img/faces/marc.jpg"/>
-                            </a>
-                        </div>
-                    </div>
-                    <div *ngIf="!isUploadValid.valueOf()">
-                        <div>
-                            <div class="card-title text-info text-center">
-                                <h4>Your uploaded data will be shown here!</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- (Commented) first row -->
-        <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-warning card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">content_copy</i>
-                        </div>
-                        <p class="card-category">Used Space</p>
-                        <h3 class="card-title">49/50
-                            <small>GB</small>
-                        </h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons text-danger">warning</i>
-                            <a href="javascript:void(0)">Get More Space...</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-success card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">store</i>
-                        </div>
-                        <p class="card-category">Revenue</p>
-                        <h3 class="card-title">$34,245</h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">date_range</i> Last 24 Hours
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-danger card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">info_outline</i>
-                        </div>
-                        <p class="card-category">Fixed Issues</p>
-                        <h3 class="card-title">75</h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">local_offer</i> Tracked from Github
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-info card-header-icon">
-                        <div class="card-icon">
-                            <i class="fa fa-twitter"></i>
-                        </div>
-                        <p class="card-category">Followers</p>
-                        <h3 class="card-title">+245</h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">update</i> Just Updated
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- (Commented) second row -->
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card card-chart">
-                    <div class="card-header card-header-success">
-                        <div class="ct-chart" id="dailySalesChart"></div>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">Daily Sales</h4>
-                        <p class="card-category">
-                            <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today
-                            sales.</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">access_time</i> updated 4 minutes ago
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card card-chart">
-                    <div class="card-header card-header-warning">
-                        <div class="ct-chart" id="websiteViewsChart"></div>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">Email Subscriptions</h4>
-                        <p class="card-category">Last Campaign Performance</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">access_time</i> campaign sent 2 days ago
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card card-chart">
-                    <div class="card-header card-header-danger">
-                        <div class="ct-chart" id="completedTasksChart"></div>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">Completed Tasks</h4>
-                        <p class="card-category">Last Campaign Performance</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">access_time</i> campaign sent 2 days ago
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- (Commented) third row -->
-        <div class="row">
-            <div class="col-lg-6 col-md-12">
+            <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header card-header-tabs card-header-primary">
-                        <div class="nav-tabs-navigation">
-                            <div class="nav-tabs-wrapper">
-                                <span class="nav-tabs-title">Tasks:</span>
-                                <ul class="nav nav-tabs" data-tabs="tabs">
-                                    <li class="nav-item">
-                                        <a mat-button class="nav-link active" href="#profile" data-toggle="tab">
-                                            <i class="material-icons">bug_report</i> Bugs
-                                            <div class="ripple-container"></div>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a mat-button class="nav-link" href="#messages" data-toggle="tab">
-                                            <i class="material-icons">code</i> Website
-                                            <div class="ripple-container"></div>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a mat-button class="nav-link" href="#settings" data-toggle="tab">
-                                            <i class="material-icons">cloud</i> Server
-                                            <div class="ripple-container"></div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="card-header card-header-info">
+                        <h4 class="card-title text-center text-black-50 font-weight-bold">ASD Classification</h4>
                     </div>
-                    <div class="card-body">
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="profile">
-                                <table class="table">
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="" checked>
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Sign contract for "What are conference organizers afraid of?"</td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="">
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Lines From Great Russian Literature? Or E-mails From My Boss?</td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="">
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Flooded: One year later, assessing what was lost and what was found when a
-                                            ravaging rain swept through metro Detroit
-                                        </td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="" checked>
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Create 4 Invisible User Experiences you Never Knew About</td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="tab-pane" id="messages">
-                                <table class="table">
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="" checked>
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Flooded: One year later, assessing what was lost and what was found when a
-                                            ravaging rain swept through metro Detroit
-                                        </td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="">
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Sign contract for "What are conference organizers afraid of?"</td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="tab-pane" id="settings">
-                                <table class="table">
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="">
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Lines From Great Russian Literature? Or E-mails From My Boss?</td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="" checked>
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Flooded: One year later, assessing what was lost and what was found when a
-                                            ravaging rain swept through metro Detroit
-                                        </td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox" value="" checked>
-                                                    <span class="form-check-sign">
-                                                          <span class="check"></span>
-                                                      </span>
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>Sign contract for "What are conference organizers afraid of?"</td>
-                                        <td class="td-actions text-right">
-                                            <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <button mat-raised-button type="button" matTooltip="Remove"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                <i class="material-icons">close</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+
+                    <div class="home-m1 text-center">
+                        <h5 class="text-black-50 font-weight-bold">Provide all three files ('.vhdr', '.eeg', '.vmrk') to classify ASD using EEG data!</h5>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-warning">
-                        <h4 class="card-title">Employees Stats</h4>
-                        <p class="card-category">New employees on 15th September, 2016</p>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <table class="table table-hover">
-                            <thead class="text-warning">
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Salary</th>
-                            <th>Country</th>
-                            </thead>
-                            <tbody>
+
+                    <!-- File check boxes -->
+                    <div class="tab-pane active" id="fileCheck">
+                        <table class="table">
+                            <tbody class="text-center">
                             <tr>
-                                <td>1</td>
-                                <td>Dakota Rice</td>
-                                <td>$36,738</td>
-                                <td>Niger</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Minerva Hooper</td>
-                                <td>$23,789</td>
-                                <td>Curaçao</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Sage Rodriguez</td>
-                                <td>$56,142</td>
-                                <td>Netherlands</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Philip Chaney</td>
-                                <td>$38,735</td>
-                                <td>Korea, South</td>
+                                <td>
+                                    <div class="file-check">
+                                        <label class="form-check-label text-black-50 font-weight-bold">
+                                            <input id="vhdrCheck" class="form-check-input" type="checkbox"
+                                                   [checked]="vhdrOk" onclick="return false;">
+                                            <span class="form-check-sign">
+                        <span class="check"></span>
+                    </span>
+                                            .vhdr ({{vhdrName}})
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="file-check">
+                                        <label class="form-check-label text-black-50 font-weight-bold">
+                                            <input id="eegCheck" class="form-check-input" type="checkbox"
+                                                   [checked]="eegOk" onclick="return false;">
+                                            <span class="form-check-sign">
+                        <span class="check"></span>
+                    </span>
+                                            .eeg ({{eegName}})
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="file-check">
+                                        <label class="form-check-label text-black-50 font-weight-bold">
+                                            <input id="vmkrCheck" class="form-check-input" type="checkbox"
+                                                   [checked]="vmrkOk" onclick="return false;">
+                                            <span class="form-check-sign">
+                        <span class="check"></span>
+                    </span>
+                                            .vmrk ({{vmrkName}})
+                                        </label>
+                                    </div>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Three buttons -->
+                    <div class="row">
+                        <!--            <div class="col-lg-8 col-md-10 ml-auto mr-auto">-->
+                        <div class="col-lg-8 col-md-2 ml-auto mr-auto">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input
+                                            type="file"
+                                            #file
+                                            style="display: none"
+                                            (change)="onFilesAdded($event)"
+                                            multiple
+                                    />
+                                    <button mat-raised-button
+                                            class="btn btn-success btn-block text-black-50 font-weight-bold"
+                                            (click)="file.click()">
+                                        Add Files
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button mat-raised-button
+                                            class="btn btn-success btn-block text-black-50 font-weight-bold"
+                                            [disabled]="!isSelectionValid"
+                                            (click)="uploadEEG()">Upload
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button mat-raised-button
+                                            class="btn btn-success btn-block text-black-50 font-weight-bold"
+                                            [disabled]="!isUploadSuccess && !isClassifyButtonShow"
+                                            (click)="doClassify()">Classify
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Crad to show the uploaded result -->
+                    <div class="card-body">
+                        <br/>
+                        <br/>
+                        <div *ngIf="isUploadSuccess.valueOf()">
+                            <div>
+                                <div class="card-title text-center">
+                                    <h4 class="text-black-50 font-weight-bold">Your data has been uploaded successfully!</h4>
+                                </div>
+                            </div>
+                            <div class="card-avatar text-center">
+                                <a href="javascript:void(0)">
+                                    <img class="img text-center" src="./assets/img/1.jpg"/>
+                                </a>
+                            </div>
+                        </div>
+                        <div *ngIf="!isUploadSuccess.valueOf() && !isUploading.valueOf()">
+                            <div>
+                                <div class="text-black-50 font-weight-bold text-center">
+                                    <h4 class="text-black-50 font-weight-bold">
+                                        Data will be shown here after a successful upload!</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="isUploading.valueOf()">
+                            <div class="text-black-50 font-weight-bold text-center">
+                                <h4 class="text-black-50 font-weight-bold">Uploading Data...</h4>
+                                <h3 class="text-black-50 font-weight-bold">{{uploadingPercentage}}%</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- (Commented) first row -->
+                    <div>
+                        <!--                    <div class="row">-->
+                        <!--                        <div class="col-lg-3 col-md-6 col-sm-6">-->
+                        <!--                            <div class="card card-stats">-->
+                        <!--                                <div class="card-header card-header-warning card-header-icon">-->
+                        <!--                                    <div class="card-icon">-->
+                        <!--                                        <i class="material-icons">content_copy</i>-->
+                        <!--                                    </div>-->
+                        <!--                                    <p class="card-category">Used Space</p>-->
+                        <!--                                    <h3 class="card-title">49/50-->
+                        <!--                                        <small>GB</small>-->
+                        <!--                                    </h3>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-footer">-->
+                        <!--                                    <div class="stats">-->
+                        <!--                                        <i class="material-icons text-danger">warning</i>-->
+                        <!--                                        <a href="javascript:void(0)">Get More Space...</a>-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col-lg-3 col-md-6 col-sm-6">-->
+                        <!--                            <div class="card card-stats">-->
+                        <!--                                <div class="card-header card-header-success card-header-icon">-->
+                        <!--                                    <div class="card-icon">-->
+                        <!--                                        <i class="material-icons">store</i>-->
+                        <!--                                    </div>-->
+                        <!--                                    <p class="card-category">Revenue</p>-->
+                        <!--                                    <h3 class="card-title">$34,245</h3>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-footer">-->
+                        <!--                                    <div class="stats">-->
+                        <!--                                        <i class="material-icons">date_range</i> Last 24 Hours-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col-lg-3 col-md-6 col-sm-6">-->
+                        <!--                            <div class="card card-stats">-->
+                        <!--                                <div class="card-header card-header-danger card-header-icon">-->
+                        <!--                                    <div class="card-icon">-->
+                        <!--                                        <i class="material-icons">info_outline</i>-->
+                        <!--                                    </div>-->
+                        <!--                                    <p class="card-category">Fixed Issues</p>-->
+                        <!--                                    <h3 class="card-title">75</h3>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-footer">-->
+                        <!--                                    <div class="stats">-->
+                        <!--                                        <i class="material-icons">local_offer</i> Tracked from Github-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col-lg-3 col-md-6 col-sm-6">-->
+                        <!--                            <div class="card card-stats">-->
+                        <!--                                <div class="card-header card-header-info card-header-icon">-->
+                        <!--                                    <div class="card-icon">-->
+                        <!--                                        <i class="fa fa-twitter"></i>-->
+                        <!--                                    </div>-->
+                        <!--                                    <p class="card-category">Followers</p>-->
+                        <!--                                    <h3 class="card-title">+245</h3>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-footer">-->
+                        <!--                                    <div class="stats">-->
+                        <!--                                        <i class="material-icons">update</i> Just Updated-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                    </div>-->
+                    </div>
+
+                    <!-- (Commented) second row -->
+                    <div>
+                        <!--                    <div class="row">-->
+                        <!--                        <div class="col-md-4">-->
+                        <!--                            <div class="card card-chart">-->
+                        <!--                                <div class="card-header card-header-success">-->
+                        <!--                                    <div class="ct-chart" id="dailySalesChart"></div>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-body">-->
+                        <!--                                    <h4 class="card-title">Daily Sales</h4>-->
+                        <!--                                    <p class="card-category">-->
+                        <!--                                        <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span>-->
+                        <!--                                        increase in today-->
+                        <!--                                        sales.</p>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-footer">-->
+                        <!--                                    <div class="stats">-->
+                        <!--                                        <i class="material-icons">access_time</i> updated 4 minutes ago-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col-md-4">-->
+                        <!--                            <div class="card card-chart">-->
+                        <!--                                <div class="card-header card-header-warning">-->
+                        <!--                                    <div class="ct-chart" id="websiteViewsChart"></div>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-body">-->
+                        <!--                                    <h4 class="card-title">Email Subscriptions</h4>-->
+                        <!--                                    <p class="card-category">Last Campaign Performance</p>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-footer">-->
+                        <!--                                    <div class="stats">-->
+                        <!--                                        <i class="material-icons">access_time</i> campaign sent 2 days ago-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col-md-4">-->
+                        <!--                            <div class="card card-chart">-->
+                        <!--                                <div class="card-header card-header-danger">-->
+                        <!--                                    <div class="ct-chart" id="completedTasksChart"></div>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-body">-->
+                        <!--                                    <h4 class="card-title">Completed Tasks</h4>-->
+                        <!--                                    <p class="card-category">Last Campaign Performance</p>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-footer">-->
+                        <!--                                    <div class="stats">-->
+                        <!--                                        <i class="material-icons">access_time</i> campaign sent 2 days ago-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                    </div>-->
+                    </div>
+
+                    <!-- (Commented) third row -->
+                    <div>
+                        <!--                    <div class="row">-->
+                        <!--                        <div class="col-lg-6 col-md-12">-->
+                        <!--                            <div class="card">-->
+                        <!--                                <div class="card-header card-header-tabs card-header-primary">-->
+                        <!--                                    <div class="nav-tabs-navigation">-->
+                        <!--                                        <div class="nav-tabs-wrapper">-->
+                        <!--                                            <span class="nav-tabs-title">Tasks:</span>-->
+                        <!--                                            <ul class="nav nav-tabs" data-tabs="tabs">-->
+                        <!--                                                <li class="nav-item">-->
+                        <!--                                                    <a mat-button class="nav-link active" href="#profile"-->
+                        <!--                                                       data-toggle="tab">-->
+                        <!--                                                        <i class="material-icons">bug_report</i> Bugs-->
+                        <!--                                                        <div class="ripple-container"></div>-->
+                        <!--                                                    </a>-->
+                        <!--                                                </li>-->
+                        <!--                                                <li class="nav-item">-->
+                        <!--                                                    <a mat-button class="nav-link" href="#messages" data-toggle="tab">-->
+                        <!--                                                        <i class="material-icons">code</i> Website-->
+                        <!--                                                        <div class="ripple-container"></div>-->
+                        <!--                                                    </a>-->
+                        <!--                                                </li>-->
+                        <!--                                                <li class="nav-item">-->
+                        <!--                                                    <a mat-button class="nav-link" href="#settings" data-toggle="tab">-->
+                        <!--                                                        <i class="material-icons">cloud</i> Server-->
+                        <!--                                                        <div class="ripple-container"></div>-->
+                        <!--                                                    </a>-->
+                        <!--                                                </li>-->
+                        <!--                                            </ul>-->
+                        <!--                                        </div>-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-body">-->
+                        <!--                                    <div class="tab-content">-->
+                        <!--                                        <div class="tab-pane active" id="profile">-->
+                        <!--                                            <table class="table">-->
+                        <!--                                                <tbody>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox" value=""-->
+                        <!--                                                                       checked>-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Sign contract for "What are conference organizers afraid of?"-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox"-->
+                        <!--                                                                       value="">-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Lines From Great Russian Literature? Or E-mails From My Boss?-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox"-->
+                        <!--                                                                       value="">-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Flooded: One year later, assessing what was lost and what was-->
+                        <!--                                                        found when a-->
+                        <!--                                                        ravaging rain swept through metro Detroit-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox" value=""-->
+                        <!--                                                                       checked>-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Create 4 Invisible User Experiences you Never Knew About</td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                </tbody>-->
+                        <!--                                            </table>-->
+                        <!--                                        </div>-->
+                        <!--                                        <div class="tab-pane" id="messages">-->
+                        <!--                                            <table class="table">-->
+                        <!--                                                <tbody>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox" value=""-->
+                        <!--                                                                       checked>-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Flooded: One year later, assessing what was lost and what was-->
+                        <!--                                                        found when a-->
+                        <!--                                                        ravaging rain swept through metro Detroit-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox"-->
+                        <!--                                                                       value="">-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Sign contract for "What are conference organizers afraid of?"-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                </tbody>-->
+                        <!--                                            </table>-->
+                        <!--                                        </div>-->
+                        <!--                                        <div class="tab-pane" id="settings">-->
+                        <!--                                            <table class="table">-->
+                        <!--                                                <tbody>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox"-->
+                        <!--                                                                       value="">-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Lines From Great Russian Literature? Or E-mails From My Boss?-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox" value=""-->
+                        <!--                                                                       checked>-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Flooded: One year later, assessing what was lost and what was-->
+                        <!--                                                        found when a-->
+                        <!--                                                        ravaging rain swept through metro Detroit-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                <tr>-->
+                        <!--                                                    <td>-->
+                        <!--                                                        <div class="form-check">-->
+                        <!--                                                            <label class="form-check-label">-->
+                        <!--                                                                <input class="form-check-input" type="checkbox" value=""-->
+                        <!--                                                                       checked>-->
+                        <!--                                                                <span class="form-check-sign">-->
+                        <!--                                                          <span class="check"></span>-->
+                        <!--                                                      </span>-->
+                        <!--                                                            </label>-->
+                        <!--                                                        </div>-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td>Sign contract for "What are conference organizers afraid of?"-->
+                        <!--                                                    </td>-->
+                        <!--                                                    <td class="td-actions text-right">-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Edit Task"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-primary btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">edit</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                        <button mat-raised-button type="button" matTooltip="Remove"-->
+                        <!--                                                                [matTooltipPosition]="'above'"-->
+                        <!--                                                                class="btn btn-danger btn-link btn-sm btn-just-icon">-->
+                        <!--                                                            <i class="material-icons">close</i>-->
+                        <!--                                                        </button>-->
+                        <!--                                                    </td>-->
+                        <!--                                                </tr>-->
+                        <!--                                                </tbody>-->
+                        <!--                                            </table>-->
+                        <!--                                        </div>-->
+                        <!--                                    </div>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col-lg-6 col-md-12">-->
+                        <!--                            <div class="card">-->
+                        <!--                                <div class="card-header card-header-warning">-->
+                        <!--                                    <h4 class="card-title">Employees Stats</h4>-->
+                        <!--                                    <p class="card-category">New employees on 15th September, 2016</p>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="card-body table-responsive">-->
+                        <!--                                    <table class="table table-hover">-->
+                        <!--                                        <thead class="text-warning">-->
+                        <!--                                        <th>ID</th>-->
+                        <!--                                        <th>Name</th>-->
+                        <!--                                        <th>Salary</th>-->
+                        <!--                                        <th>Country</th>-->
+                        <!--                                        </thead>-->
+                        <!--                                        <tbody>-->
+                        <!--                                        <tr>-->
+                        <!--                                            <td>1</td>-->
+                        <!--                                            <td>Dakota Rice</td>-->
+                        <!--                                            <td>$36,738</td>-->
+                        <!--                                            <td>Niger</td>-->
+                        <!--                                        </tr>-->
+                        <!--                                        <tr>-->
+                        <!--                                            <td>2</td>-->
+                        <!--                                            <td>Minerva Hooper</td>-->
+                        <!--                                            <td>$23,789</td>-->
+                        <!--                                            <td>Curaçao</td>-->
+                        <!--                                        </tr>-->
+                        <!--                                        <tr>-->
+                        <!--                                            <td>3</td>-->
+                        <!--                                            <td>Sage Rodriguez</td>-->
+                        <!--                                            <td>$56,142</td>-->
+                        <!--                                            <td>Netherlands</td>-->
+                        <!--                                        </tr>-->
+                        <!--                                        <tr>-->
+                        <!--                                            <td>4</td>-->
+                        <!--                                            <td>Philip Chaney</td>-->
+                        <!--                                            <td>$38,735</td>-->
+                        <!--                                            <td>Korea, South</td>-->
+                        <!--                                        </tr>-->
+                        <!--                                        </tbody>-->
+                        <!--                                    </table>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                    </div>-->
+                    </div>
+
                 </div>
             </div>
+        </div>
+
+        <div *ngIf="isResultLoading.valueOf()">
+            <img class="text-center" src="./assets/img/predicting-gif.gif" height="600" width="1020"/>
         </div>
     </div>
 </div>

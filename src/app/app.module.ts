@@ -14,10 +14,8 @@ import { HomeComponent } from './home/home.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ResultComponent } from './results/result.component';
 import { PatientComponent } from './patient/patient.component';
-import { IconsComponent } from './icons/icons.component';
-import { MapsComponent } from './maps/maps.component';
+import { EegComponent } from './eeg/eeg.component';
 import { ThermalComponent } from './thermal/thermal.component';
-import { UpgradeComponent } from './upgrade/upgrade.component';
 import {
   AgmCoreModule
 } from '@agm/core';
@@ -37,9 +35,9 @@ import {MatButtonModule} from '@angular/material/button';
         ComponentsModule,
         RouterModule,
         AppRoutingModule,
-        AgmCoreModule.forRoot({
-            apiKey: 'YOUR_GOOGLE_MAPS_API_KEY'
-        }),
+        // AgmCoreModule.forRoot({
+        //     apiKey: 'YOUR_GOOGLE_MAPS_API_KEY'
+        // }),
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule

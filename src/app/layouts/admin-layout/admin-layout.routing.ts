@@ -4,10 +4,8 @@ import {HomeComponent} from '../../home/home.component';
 import {UserProfileComponent} from '../../user-profile/user-profile.component';
 import {ResultComponent} from '../../results/result.component';
 import {PatientComponent} from '../../patient/patient.component';
-import {IconsComponent} from '../../icons/icons.component';
-import {MapsComponent} from '../../maps/maps.component';
+import {EegComponent} from '../../eeg/eeg.component';
 import {ThermalComponent} from '../../thermal/thermal.component';
-import {UpgradeComponent} from '../../upgrade/upgrade.component';
 
 export const AdminLayoutRoutes: Routes = [
     // {
@@ -25,7 +23,7 @@ export const AdminLayoutRoutes: Routes = [
     //   path: '',
     //   children: [ {
     //     path: 'icons',
-    //     component: IconsComponent
+    //     component: EegComponent
     //     }]
     // }, {
     //     path: '',
@@ -56,8 +54,6 @@ export const AdminLayoutRoutes: Routes = [
     {path: 'user-profile', component: UserProfileComponent},
     {path: 'result', component: ResultComponent},
     {path: 'patient', component: PatientComponent},
-    {path: 'icons', component: IconsComponent},
-    {path: 'maps', component: MapsComponent},
+    {path: 'eeg', component: EegComponent},
     {path: 'thermal', component: ThermalComponent},
-    {path: 'upgrade', component: UpgradeComponent},
 ];
