@@ -1,8 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {NavigationExtras, Router} from '@angular/router';
 import {Patient} from '../models/patient';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {PatientService} from '../services/patient.service';
+import {Result} from '../models/result';
+import {ConfirmationDialogService} from '../services/confirmation.dialog.service';
 
 @Component({
     selector: 'app-patient',
@@ -19,6 +21,7 @@ export class PatientComponent implements OnInit {
     updateTempPatient: Patient;
     newPatient: Patient;
     private patientDetailsForm: FormGroup;
+    searchText;
 
     /**
      * Constructor
@@ -26,10 +29,12 @@ export class PatientComponent implements OnInit {
      * @param router
      * @param formBuilder
      * @param patientService
+     * @param confirmationDialogService
      */
     constructor(private router: Router,
                 private formBuilder: FormBuilder,
-                private patientService: PatientService) {
+                private patientService: PatientService,
+                private confirmationDialogService: ConfirmationDialogService) {
         if (localStorage.getItem('uid') === '0') {
             this.router.navigate(['login']);
         }
@@ -91,6 +96,19 @@ export class PatientComponent implements OnInit {
         this.showViewPatient = false;
         this.showAddPatient = false;
         this.showSearch = true;
+        this.requestResultNavigation(patient.id);
+    }
+
+    /**
+     * On click of the EEG icon for each patient
+     *
+     * @param patient
+     */
+    onEEGClick(patient: Patient) {
+        this.showViewPatient = false;
+        this.showAddPatient = false;
+        this.showSearch = true;
+        this.requestEEGNavigation(patient.id);
     }
 
     /**
@@ -201,14 +219,22 @@ export class PatientComponent implements OnInit {
      */
     onDeleteClick(patient: Patient) {
 
-        this.patientService.deletePatient(patient.id)   // Call to delete patient
-            .subscribe(response => {
-                if (this.patientService.isDeleted) {
-                    this.postDeletePatient(patient);
+        this.confirmationDialogService.confirm('Delete Patient',
+            'Deletion will erase all results and data saved for this patient, ' +
+            'Do you want to delete anyway?')
+            .then(confirm => {
+                if (confirm) {
+                    this.patientService.deletePatient(patient.id)   // Call to delete patient
+                        .subscribe(response => {
+                            if (this.patientService.isDeleted) {
+                                this.postDeletePatient(patient);
+                            }
+                        }, error => {
+                            console.log(error);
+                        });
                 }
-            }, error => {
-                console.log(error);
-            });
+            })
+            .catch(() => '');
     }
 
     /**
@@ -240,5 +266,33 @@ export class PatientComponent implements OnInit {
         //     }, error => {
         //         console.log(error);
         //     });
+    }
+
+    public openConfirmationDialog() {
+        this.confirmationDialogService.confirm('Delete Patient',
+            'Deletion will erase all results and data saved for this patient, ' +
+            'Do you want to delete anyway?')
+            .then(confirm => {
+                return confirm
+            })
+            .catch();
+    }
+
+    requestResultNavigation(patientId: number) {
+
+        this.router.navigate(['result'], this.getParsingObjects(patientId));
+    }
+
+    requestEEGNavigation(patientId: number) {
+
+        this.router.navigate(['eeg'], this.getParsingObjects(patientId));
+    }
+
+    getParsingObjects(patientId: number): NavigationExtras {
+        return {
+            queryParams: {
+                'patientId': JSON.stringify(patientId)
+            }
+        };
     }
 }

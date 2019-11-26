@@ -32,8 +32,6 @@ export class ClassificationService {
             .pipe(
                 tap(_ => this.isClassified = true),
                 catchError(err => {
-                    localStorage.setItem('classifying', 'false');
-                    this.router.navigate(['home']);
                     this.handleError('classification', []);
                     return of(err);
                 })
@@ -42,6 +40,8 @@ export class ClassificationService {
 
     private handleError<T>(operation = 'operation', result?: T) {
         return (error: any): Observable<T> => {
+            localStorage.setItem('classifying', 'false');
+            this.router.navigate(['home']);
             console.error(error); // log to console instead
             this.log(`${operation} failed: ${error.message}`);
 

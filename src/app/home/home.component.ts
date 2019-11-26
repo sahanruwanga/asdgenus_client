@@ -1,19 +1,21 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {FileService} from '../services/file.service';
 import {ClassificationService} from '../services/classification.service';
 import {Result} from '../models/result';
-import {NavigationExtras, Router} from '@angular/router';
+import {NavigationExtras, Event, NavigationStart, Router} from '@angular/router';
 import {Eeg} from '../models/eeg';
 import {HttpEventType} from '@angular/common/http';
+import {ComponentCanDeactivate} from '../services/navigation.guard';
+import {Observable} from 'rxjs';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, ComponentCanDeactivate {
 
-    files: File[];
+    files: Array<File>;
     isSelectionValid = false;
     isUploadSuccess = false;
     isClassifyButtonShow = false;
@@ -21,20 +23,22 @@ export class HomeComponent implements OnInit {
     eegOk = false;
     vmrkOk = false;
     eegPath: string;
-    eegName: string;
-    vhdrName: string;
-    vmrkName: string;
+    eegName = '';
+    vhdrName = '';
+    vmrkName = '';
     eeg: Eeg;
     newResult: Result;
     eegSignalLocation: string;
     isResultLoading = false;
     isUploading = false;
     uploadingPercentage: number;
+    currentUploadedFileNames = '';
+    isFileNamesMatching = true;
 
     constructor(private fileService: FileService,
                 private classificationService: ClassificationService,
                 private router: Router) {
-        this.files = [];
+        this.files = new Array<File>();
         if (localStorage.getItem('uid') === '0') {
             this.router.navigate(['login']);
         }
@@ -44,6 +48,13 @@ export class HomeComponent implements OnInit {
         } else if (localStorage.getItem('classifying') === 'true') {
             this.isResultLoading = true;
         }
+
+        this.router.events
+            .subscribe((event: Event) => {
+                if (event instanceof NavigationStart) {
+                    return;
+                }
+            });
     }
 
     ngOnInit() {
@@ -51,44 +62,66 @@ export class HomeComponent implements OnInit {
 
     onFilesAdded(event) {
 
-        this.unSetFiles();
-        this.files = event.target.files;
-        // let contain = false;
-        // for (const file of event.target.files) {
-        //     for (const f of this.files) {
-        //         if (f.name === file.name) {
-        //             contain = true;
-        //         }
-        //     }
-        //     if (!contain) {
-        //         this.files.fill(file);
-        //     }
-        //     contain = false;
-        // }
-        //
+        this.isFileNamesMatching = true;
+        let eegFile: File = null;
+        let vhdrFile: File = null;
+        let vmrkFile: File = null;
+        this.files.map((f) => {
+            if (f.name.endsWith('.vhdr')) {
+                vhdrFile = f;
+            }
+            if (f.name.endsWith('.vmrk')) {
+                vmrkFile = f;
+            }
+            if (f.name.endsWith('.eeg')) {
+                eegFile = f;
+            }
+        });
 
-        for (const file of this.files) {
-            if (file.name.endsWith('.vhdr')) {
-                this.vhdrName = file.name;
-                this.vhdrOk = true;
-            } else if (file.name.endsWith('.vmrk')) {
-                this.vmrkName = file.name;
-                this.vmrkOk = true;
-            } else if (file.name.endsWith('.eeg')) {
-                this.eegName = file.name;
-                this.eegOk = true;
+        this.files = new Array<File>();
+
+        for (const f of event.target.files) {
+            if (f.name.endsWith('.vhdr')) {
+                vhdrFile = f;
+            }
+            if (f.name.endsWith('.vmrk')) {
+                vmrkFile = f;
+            }
+            if (f.name.endsWith('.eeg')) {
+                eegFile = f;
             }
         }
-        this.isSelectionValid = this.vhdrOk && this.eegOk && this.vmrkOk;
-    }
 
-    private unSetFiles() {
-        this.vmrkOk = false;
-        this.eegOk = false;
-        this.vhdrOk = false;
-        this.eegName = '';
-        this.vhdrName = '';
-        this.vmrkName = '';
+        if (eegFile !== null) {
+            this.files.push(eegFile);
+            this.eegName = eegFile.name;
+            this.eegOk = true;
+        }
+        if (vhdrFile !== null) {
+            this.files.push(vhdrFile);
+            this.vhdrName = vhdrFile.name;
+            this.vhdrOk = true;
+        }
+        if (vmrkFile !== null) {
+            this.files.push(vmrkFile);
+            this.vmrkName = vmrkFile.name;
+            this.vmrkOk = true;
+        }
+
+        const eeg1Name = this.eegName.substring(4 - this.eegName.length, this.eegName.length - 4);
+        const vhdr1Name = this.vhdrName.substring(5 - this.vhdrName.length, this.vhdrName.length - 5);
+        const vmrk1Name = this.vmrkName.substring(5 - this.vmrkName.length, this.vmrkName.length - 5);
+        if (vhdr1Name !== '' && vhdr1Name === eeg1Name && vhdr1Name === vmrk1Name) {
+            this.isSelectionValid = true;
+            this.eegOk = true;
+            this.vhdrOk = true;
+            this.vmrkOk = true;
+        } else {
+            this.isSelectionValid = false;
+            if (this.eegOk && this.vmrkOk && this.vhdrOk) {
+                this.isFileNamesMatching = false;
+            }
+        }
     }
 
     uploadEEG() {
@@ -119,8 +152,9 @@ export class HomeComponent implements OnInit {
 
     postUploadEEG(eeg: Eeg) {
 
+        this.currentUploadedFileNames = this.files[0].name + ', ' + this.files[1].name + ', ' + this.files[2].name;
         this.eeg = eeg;
-        this.eegSignalLocation = eeg.signalLocation;
+        this.eegSignalLocation = eeg.signalImage;
         this.isUploadSuccess = true;
         this.isClassifyButtonShow = true;
         this.isSelectionValid = true;
@@ -146,17 +180,7 @@ export class HomeComponent implements OnInit {
                         }
                     }
                 });
-            // if (this.classificationService.isClassificationError) {
-            //     this.isResultLoading = false;
-            //     localStorage.setItem('classifying', 'false');
-            // }
         }
-        // .subscribe(res => {
-        //     this.newResult = <Result>res;
-        //     this.requestResultNavigatin(this.newResult);
-        // }, (err) => {
-        //     console.log(err);
-        // });
     }
 
     requestResultNavigation(result: Result) {
@@ -165,12 +189,19 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['result', {'fromClassification': 'true'}], this.getParsingObjects());
     }
 
-    getParsingObjects(): NavigationExtras {
+    getParsingObjects()
+        :
+        NavigationExtras {
         return {
             queryParams: {
                 'eeg': JSON.stringify(this.eeg),
                 'result': JSON.stringify(this.newResult)
             }
         };
+    }
+
+    @HostListener('window:beforeunload')
+    canDeactivate(): Observable<boolean> | boolean {
+        return !this.isUploading;
     }
 }

@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Eeg} from '../models/eeg';
 import {EegService} from '../services/eeg.service';
+import {ConfirmationDialogService} from '../services/confirmation.dialog.service';
 
 @Component({
     selector: 'app-eeg',
@@ -13,18 +14,31 @@ export class EegComponent implements OnInit {
     isShowEEG = false;
     showingEEG: Eeg;
     eegs: Array<Eeg>;
+    searchText;
 
-    constructor(private router: Router, private eegService: EegService) {
+    constructor(private router: Router,
+                private route: ActivatedRoute,
+                private eegService: EegService,
+                private confirmationDialogService: ConfirmationDialogService) {
         if (localStorage.getItem('uid') === '0') {
             this.router.navigate(['login']);
         }
 
-        this.showingEEG = new Eeg(null, null, null, null, null, null, null, null);
+        this.showingEEG = new Eeg(null, null, null, null, null, null, null, null, null);
         this.eegs = new Array<Eeg>();
         this.getAllEEG();
     }
 
     ngOnInit() {
+        let patientId = '-1';
+        this.route.queryParams.subscribe(params => {
+            if (params['patientId']) {
+                patientId = JSON.parse(params['patientId']);
+            }
+        });
+        if (patientId !== '-1') {
+            this.searchText = String(patientId);
+        }
     }
 
     closeEEG() {
@@ -60,14 +74,22 @@ export class EegComponent implements OnInit {
 
     onDeleteEEG(eeg: Eeg) {
 
-        this.eegService.deleteEEG(eeg.id)
-            .subscribe(response => {
-                if (this.eegService.isDeleted) {
-                    this.postDeleteEEG(eeg);
+        this.confirmationDialogService.confirm('Delete EEG',
+            'Deletion will erase the result EEG too, ' +
+            'Do you want to delete anyway?')
+            .then(confirm => {
+                if (confirm) {
+                    this.eegService.deleteEEG(eeg.id)
+                        .subscribe(response => {
+                            if (this.eegService.isDeleted) {
+                                this.postDeleteEEG(eeg);
+                            }
+                        }, error => {
+                            console.log(error);
+                        });
                 }
-            }, error => {
-                console.log(error);
-            });
+            })
+            .catch(() => '');
     }
 
     postDeleteEEG(eeg: Eeg) {

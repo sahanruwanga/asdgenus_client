@@ -9,14 +9,11 @@
             <div class="card-body" *ngIf="showSearch.valueOf()">
                 <form class="navbar-form">
                     <div class="row sub-div">
-                        <div class="input-group no-border col-md-4">
-                            <input type="text" value="" class="form-control" placeholder="Search...">
-                            <button mat-raised-button type="submit"
-                                    class="btn btn-white btn-round btn-just-icon" (click)="doSearch()">
-                                <i class="material-icons">search</i>
-                                <div class="ripple-container"></div>
-                            </button>
-                        </div>
+                        <i class="material-icons text-gray">search</i>
+                        <input type="text" class="form-control col-md-6"
+                               [(ngModel)]="searchText"
+                               autocomplete="on" name="search"
+                               placeholder="   Type name, or id to search">
                         <button mat-raised-button
                                 class="btn btn-info btn-success col-md-2 text-black-50 font-weight-bold"
                                 (click)="onAddNewPatient()">
@@ -86,7 +83,8 @@
                     <!-- Section to edit patient details -->
                     <form [formGroup]="patientDetailsForm">
                         <div>
-                            <p class="text-black-50 font-weight-bold">Updating Patient (ID) : {{updateTempPatient.id}}</p>
+                            <p class="text-black-50 font-weight-bold">Updating Patient (ID)
+                                : {{updateTempPatient.id}}</p>
                             <div class="row">
                                 <div class="col-md-10">
                                     <mat-form-field class="example-full-width">
@@ -119,18 +117,26 @@
                     </form>
                 </div>
 
+                <div *ngIf="patients.length === 0">
+                    <br/>
+                    <br/>
+                    <h4 class="font-italic text-gray text-center">No saved Patients</h4>
+                </div>
+
                 <!-- Patient Table -->
                 <div class="table-responsive">
                     <table class="table" *ngIf="patients.length!==0">
                         <thead class="text-primary text-center">
-                        <th> ID</th>
-                        <th> Name</th>
-                        <th> Age</th>
-                        <th> Gender</th>
-                        <th> Actions</th>
-                        </thead>
-                        <tbody class="text-center" *ngFor="let patient of patients">
                         <tr>
+                            <th> ID</th>
+                            <th> Name</th>
+                            <th> Age</th>
+                            <th> Gender</th>
+                            <th> Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="text-center">
+                        <tr *ngFor="let patient of patients | filter:searchText">
                             <td>{{patient.id}}</td>
                             <td>{{patient.name}}</td>
                             <td>{{patient.age}}</td>
@@ -141,10 +147,17 @@
                                         class="btn btn-primary btn-link btn-sm btn-just-icon">
                                     <i class="material-icons">edit</i>
                                 </button>
+
                                 <button mat-raised-button type="button" matTooltip="Show Results"
                                         [matTooltipPosition]="'above'" (click)="onResultClick(patient)"
                                         class="btn btn-primary btn-link btn-sm btn-just-icon">
                                     <i class="material-icons">content_paste</i>
+                                </button>
+
+                                <button mat-raised-button type="button" matTooltip="Show EEGs"
+                                        [matTooltipPosition]="'above'" (click)="onEEGClick(patient)"
+                                        class="btn btn-primary btn-link btn-sm btn-just-icon">
+                                    <i class="material-icons">waves</i>
                                 </button>
 
                                 <button mat-raised-button type="button" matTooltip="Delete"

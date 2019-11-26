@@ -1,7 +1,7 @@
 import {Component, OnInit, ElementRef} from '@angular/core';
 import {ROUTES} from '../sidebar/sidebar.component';
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {Router} from '@angular/router';
+import {NavigationExtras, Router} from '@angular/router';
 import {UserService} from '../../services/user.service';
 
 @Component({
@@ -131,12 +131,20 @@ export class NavbarComponent implements OnInit {
 
     logout() {
 
-        localStorage.setItem('uid', '0');
-        localStorage.setItem('classifying', 'false');
-        this.router.navigate(['login']);
+        this.router.navigate(['login'], this.getParsingObjects());
     }
 
     openUserProfile() {
         this.router.navigate(['user-profile']);
+    }
+
+    getParsingObjects()
+        :
+        NavigationExtras {
+        return {
+            queryParams: {
+                'from': JSON.stringify('logout')
+            }
+        };
     }
 }

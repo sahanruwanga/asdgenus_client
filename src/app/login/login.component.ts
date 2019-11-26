@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {User} from '../models/user';
 import {AuthenticationService} from '../services/authentication.service';
 import {Result} from '../models/result';
@@ -16,7 +16,20 @@ export class LoginComponent implements OnInit {
     user: User = new User(0, '', '', '');
     isError = false;
 
-    constructor(private formBuilder: FormBuilder, private router: Router, private authenticationService: AuthenticationService) {
+    constructor(private formBuilder: FormBuilder,
+                private route: ActivatedRoute,
+                private router: Router, private authenticationService: AuthenticationService) {
+        let from = '';
+        this.route.queryParams.subscribe(params => {
+            if (params['from']) {
+                from = JSON.parse(params['from']);
+            }
+        });
+        if (from === 'logout') {
+            localStorage.setItem('uid', '0');
+            localStorage.setItem('classifying', 'false');
+        }
+
         if (localStorage.getItem('uid') !== '0') {
             this.router.navigate(['home']);
         }

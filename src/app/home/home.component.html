@@ -9,7 +9,11 @@
                     </div>
 
                     <div class="home-m1 text-center">
-                        <h5 class="text-black-50 font-weight-bold">Provide all three files ('.vhdr', '.eeg', '.vmrk') to classify ASD using EEG data!</h5>
+                        <h5 class="text-black-50 font-weight-bold"
+                            matTooltip="vhdr file name ends with '.vhdr', eeg file name ends with '.eeg',
+                            and vmrk file name ends with '.vmrk'">
+                            Provide all three files ('vhdr', 'eeg', 'vmrk') to classify ASD using EEG data!
+                        </h5>
                     </div>
 
                     <!-- File check boxes -->
@@ -19,7 +23,8 @@
                             <tr>
                                 <td>
                                     <div class="file-check">
-                                        <label class="form-check-label text-black-50 font-weight-bold">
+                                        <label class="form-check-label text-black-50 font-weight-bold"
+                                               matTooltip="A text header file containing meta data">
                                             <input id="vhdrCheck" class="form-check-input" type="checkbox"
                                                    [checked]="vhdrOk" onclick="return false;">
                                             <span class="form-check-sign">
@@ -31,7 +36,8 @@
                                 </td>
                                 <td>
                                     <div class="file-check">
-                                        <label class="form-check-label text-black-50 font-weight-bold">
+                                        <label class="form-check-label text-black-50 font-weight-bold"
+                                               matTooltip="A binary data file containing the voltage values of the EEG">
                                             <input id="eegCheck" class="form-check-input" type="checkbox"
                                                    [checked]="eegOk" onclick="return false;">
                                             <span class="form-check-sign">
@@ -43,7 +49,8 @@
                                 </td>
                                 <td>
                                     <div class="file-check">
-                                        <label class="form-check-label text-black-50 font-weight-bold">
+                                        <label class="form-check-label text-black-50 font-weight-bold"
+                                               matTooltip="A text marker file containing information about events in the data">
                                             <input id="vmkrCheck" class="form-check-input" type="checkbox"
                                                    [checked]="vmrkOk" onclick="return false;">
                                             <span class="form-check-sign">
@@ -56,6 +63,10 @@
                             </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="row text-danger sub-div" *ngIf="!isFileNamesMatching.valueOf()">
+                        <h6>*File names MUST BE the same to avoid error!</h6>
                     </div>
 
                     <!-- Three buttons -->
@@ -73,6 +84,7 @@
                                     />
                                     <button mat-raised-button
                                             class="btn btn-success btn-block text-black-50 font-weight-bold"
+                                            matTooltip="Import files to upload"
                                             (click)="file.click()">
                                         Add Files
                                     </button>
@@ -80,6 +92,7 @@
                                 <div class="col-md-4">
                                     <button mat-raised-button
                                             class="btn btn-success btn-block text-black-50 font-weight-bold"
+                                            matTooltip="Upload imported files"
                                             [disabled]="!isSelectionValid"
                                             (click)="uploadEEG()">Upload
                                     </button>
@@ -87,6 +100,7 @@
                                 <div class="col-md-4">
                                     <button mat-raised-button
                                             class="btn btn-success btn-block text-black-50 font-weight-bold"
+                                            matTooltip="Classify ASD using uploaded files"
                                             [disabled]="!isUploadSuccess && !isClassifyButtonShow"
                                             (click)="doClassify()">Classify
                                     </button>
@@ -102,12 +116,15 @@
                         <div *ngIf="isUploadSuccess.valueOf()">
                             <div>
                                 <div class="card-title text-center">
-                                    <h4 class="text-black-50 font-weight-bold">Your data has been uploaded successfully!</h4>
+                                    <h4 class="text-black-50 font-weight-bold">Your data has been uploaded
+                                        successfully!</h4>
+                                    <h5 class="text-black-50 font-weight-bold">- Uploaded Files -</h5>
+                                    <h5 class="text-black-50 font-weight-bold">({{currentUploadedFileNames}})</h5>
                                 </div>
                             </div>
                             <div class="card-avatar text-center">
                                 <a href="javascript:void(0)">
-                                    <img class="img text-center" src="./assets/img/1.jpg"/>
+                                    <img class="img col-md-10 text-center" [src]="eegSignalLocation"/>
                                 </a>
                             </div>
                         </div>
@@ -618,3 +635,5 @@
         </div>
     </div>
 </div>
+
+<ng-content></ng-content>

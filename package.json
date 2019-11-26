@@ -48,7 +48,10 @@
     "rxjs": "6.5.2",
     "rxjs-compat": "6.5.2",
     "web-animations-js": "2.3.1",
-    "zone.js": "0.9.1"
+    "zone.js": "0.9.1",
+    "ng2-search-filter": "latest",
+    "ng2-pdf-viewer": "latest",
+    "@ng-bootstrap/ng-bootstrap": "latest"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.800.2",

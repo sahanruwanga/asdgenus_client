@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {Result} from '../models/result';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -6,6 +6,9 @@ import {Eeg} from '../models/eeg';
 import {PatientService} from '../services/patient.service';
 import {ResultService} from '../services/result.service';
 import {ResultSubject} from '../models/result-subject';
+import {ConfirmationDialogService} from '../services/confirmation.dialog.service';
+import {Observable} from 'rxjs';
+import {ResultCanDeactivate} from '../services/unsaved-result.guard';
 
 
 @Component({
@@ -13,7 +16,7 @@ import {ResultSubject} from '../models/result-subject';
     templateUrl: './result.component.html',
     styleUrls: ['./result.component.css']
 })
-export class ResultComponent implements OnInit {
+export class ResultComponent implements OnInit, ResultCanDeactivate {
 
     isShowSearch = true;
     isUnsavedResult = false;
@@ -33,11 +36,13 @@ export class ResultComponent implements OnInit {
     newSubjectAge: number;
     newSubjectGender: string;
     resultImage: string;
+    searchText;
 
     constructor(private router: Router, private route: ActivatedRoute,
                 private patientService: PatientService,
                 private resultService: ResultService,
-                private formBuilder: FormBuilder) {
+                private formBuilder: FormBuilder,
+                private confirmationDialogService: ConfirmationDialogService) {
         if (localStorage.getItem('uid') === '0') {
             this.router.navigate(['login']);
         }
@@ -83,6 +88,16 @@ export class ResultComponent implements OnInit {
         this.patientControl = new FormControl('', [Validators.required]);
         this.selectFormControl = new FormControl('', Validators.required);
         this.loadPatientDetailsForm();
+
+        let patientId = '-1';
+        this.route.queryParams.subscribe(params => {
+            if (params['patientId']) {
+                patientId = JSON.parse(params['patientId']);
+            }
+        });
+        if (patientId !== '-1') {
+            this.searchText = String(patientId);
+        }
     }
 
     /**
@@ -227,16 +242,45 @@ export class ResultComponent implements OnInit {
         this.resultService.isGetAllResults = false;
     }
 
-    onDeleteClick(result: Result) {
-
-        this.resultService.deleteResult(result.id)
+    getAllResultsForSubject(subjectId: number) {
+        this.resultService.getAllResultsForSubject(subjectId)
             .subscribe(response => {
-                if (this.resultService.isDeleted) {
-                    this.postDeleteResult(result);
+                if (this.resultService.isGetAllResultsForSubject) {
+                    this.postGetAllResultsForSubject(<Result[]>response);
                 }
             }, error => {
                 console.log(error);
             });
+    }
+
+    postGetAllResultsForSubject(results: Result[]) {
+
+        this.results = results;
+        if (this.results === null) {
+            this.results = new Array<Result>();
+        }
+        this.resultService.isGetAllResultsForSubject = false;
+    }
+
+
+    onDeleteClick(result: Result) {
+
+        this.confirmationDialogService.confirm('Delete Result',
+            'Result will no longer available, ' +
+            'Do you want to delete anyway?')
+            .then(confirm => {
+                if (confirm) {
+                    this.resultService.deleteResult(result.id)
+                        .subscribe(response => {
+                            if (this.resultService.isDeleted) {
+                                this.postDeleteResult(result);
+                            }
+                        }, error => {
+                            console.log(error);
+                        });
+                }
+            })
+            .catch(() => '');
     }
 
     postDeleteResult(result: Result) {
@@ -249,5 +293,10 @@ export class ResultComponent implements OnInit {
         this.isShowResult = false;
         this.isShowSearch = true;
         this.resultService.isDeleted = false;
+    }
+
+    @HostListener('window:beforeunload')
+    canDeactivate(): Observable<boolean> | boolean {
+        return !this.isUnsavedResult;
     }
 }

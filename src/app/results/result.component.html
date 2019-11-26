@@ -13,14 +13,11 @@
                     <div class="card-body" *ngIf="isShowSearch.valueOf()">
                         <form class="navbar-form">
                             <div class="row sub-div">
-                                <div class="input-group no-border col-md-4">
-                                    <input type="text" value="" class="form-control" placeholder="Search...">
-                                    <button mat-raised-button type="submit"
-                                            class="btn btn-white btn-round btn-just-icon">
-                                        <i class="material-icons">search</i>
-                                        <div class="ripple-container"></div>
-                                    </button>
-                                </div>
+                                <i class="material-icons text-gray">search</i>
+                                <input type="text" class="form-control col-md-6"
+                                       [(ngModel)]="searchText"
+                                       autocomplete="off" name="search"
+                                       placeholder="   Type Id, result, or date to search">
                             </div>
                         </form>
                     </div>
@@ -36,10 +33,12 @@
                             </button>
                             <br/>
                             <div class="font-weight-bold text-black-50 text-center" *ngIf="!isUnsavedResult.valueOf()">
-                                <h4 class="font-weight-bold text-black-50"> ASD classification result for the patient(ID) :{{showingResult.subjectId}}</h4>
+                                <h4 class="font-weight-bold text-black-50"> ASD classification result for the
+                                    patient(ID) :{{showingResult.subjectId}}</h4>
                             </div>
                             <div class="font-weight-bold text-black-50 text-center" *ngIf="isUnsavedResult.valueOf()">
-                                <h4 class="font-weight-bold text-black-50">Showing result is not yet saved! Save from below not to lost!</h4>
+                                <h4 class="font-weight-bold text-black-50">
+                                    Results below are not yet saved!</h4>
                             </div>
                             <br/>
                             <div class="card-avatar text-center">
@@ -102,7 +101,8 @@
 
                                 <!-- Save for an existing patient -->
                                 <div id="patientHandle" *ngIf="!isNewPatient.valueOf() && patientIds.length != 0">
-                                    <mat-label class="text-black-50 font-weight-bold font-weight-bold">Select the patient ID to save the
+                                    <mat-label class="text-black-50 font-weight-bold font-weight-bold">Select the
+                                        patient ID to save the
                                         result !
                                     </mat-label>
                                     <mat-form-field class="col-md-2">
@@ -126,19 +126,26 @@
                             </div>
                         </div>
 
+                        <div *ngIf="results.length === 0">
+                            <br/>
+                            <br/>
+                            <h4 class="font-italic text-gray text-center">No saved Results</h4>
+                        </div>
                         <!-- Result Table -->
                         <div class="table-responsive">
                             <table class="table" *ngIf="results.length!==0">
                                 <thead class="text-primary text-center">
-                                <th class="col-md-1"> ID</th>
-                                <th class="col-md-2"> Patient ID</th>
-                                <th class="col-md-2"> EEG ID</th>
-                                <th> Result</th>
-                                <th> Date</th>
-                                <th> Actions</th>
-                                </thead>
-                                <tbody class="text-center" *ngFor="let result of results">
                                 <tr>
+                                    <th class="col-md-1"> ID</th>
+                                    <th class="col-md-2"> Patient ID</th>
+                                    <th class="col-md-2"> EEG ID</th>
+                                    <th> Result</th>
+                                    <th> Date</th>
+                                    <th> Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                <tr *ngFor="let result of results | filter:searchText">
                                     <td>{{result.id}}</td>
                                     <td>{{result.subjectId}}</td>
                                     <td>{{result.eegId}}</td>

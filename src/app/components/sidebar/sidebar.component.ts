@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {NavigationGuard} from '../../services/navigation.guard';
 
 declare const $: any;
 
@@ -14,8 +15,10 @@ export const ROUTES: RouteInfo[] = [
     {path: '/result', title: 'Results', icon: 'content_paste', class: ''},
     {path: '/patient', title: 'Patients', icon: 'people', class: ''},
     {path: '/eeg', title: 'EEG', icon: 'waves', class: ''},
-    {path: '/thermal', title: 'Thermal', icon: 'photo', class: ''},
+    // {path: '/thermal', title: 'Thermal', icon: 'photo', class: ''},
     {path: '/user-profile', title: 'User Profile', icon: 'person', class: ''},
+    {path: '/help', title: 'Help', icon: 'info', class: ''},
+    {path: '/contact', title: 'Contact', icon: 'contact_support', class: ''},
 ];
 
 @Component({

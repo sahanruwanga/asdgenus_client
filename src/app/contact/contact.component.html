@@ -1,0 +1,49 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-info">
+                        <h4 class="card-title text-center text-black-50 font-weight-bold">Contact Information</h4>
+                    </div>
+
+                    <div class="home-m1 text-center">
+                        <h5 class="text-black-50 font-weight-bold">
+                            If you have anything to be clarified, leave us a message using following form.
+                            We will come back to you as soon as possible.
+                        </h5>
+                    </div>
+
+                    <div class="col-md-10">
+                        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+                            <mat-form-field class="example-full-width">
+                                <input matInput placeholder="Your Name" type="text"
+                                       [(ngModel)]="name" formControlName="name">
+                            </mat-form-field>
+
+                            <mat-form-field class="example-full-width">
+                                <input matInput placeholder="Your Email" type="email"
+                                       [(ngModel)]="from" formControlName="email">
+                            </mat-form-field>
+
+                            <mat-form-field class="example-full-width">
+                                    <textarea matInput placeholder="Your Message" type="email"
+                                              [(ngModel)]="message" formControlName="message"></textarea>
+                            </mat-form-field>
+                            <input class="btn btn-success btn-block col-md-2 text-black-50 font-weight-bold"
+                                   type="submit" value="Send" [disabled]="name === '' || from === '' || message === ''">
+                        </form>
+                    </div>
+
+                    <div class="home-m1 text-center">
+                        <h5 class="text-black-50 font-weight-bold">
+
+                            copyright @ 2019 CodeSpark
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

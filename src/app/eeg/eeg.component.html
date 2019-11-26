@@ -13,19 +13,22 @@
                     <div class="card-body" *ngIf="isShowSearch.valueOf()">
                         <form class="navbar-form">
                             <div class="row sub-div">
-                                <div class="input-group no-border col-md-4">
-                                    <input type="text" value="" class="form-control" placeholder="Search...">
-                                    <button mat-raised-button type="submit"
-                                            class="btn btn-white btn-round btn-just-icon">
-                                        <i class="material-icons">search</i>
-                                        <!--                                        <div class="ripple-container"></div>-->
-                                    </button>
-                                </div>
+                                <i class="material-icons text-gray">search</i>
+                                <input type="text" class="form-control col-md-6"
+                                       [(ngModel)]="searchText"
+                                       autocomplete="off" name="search"
+                                       placeholder="   Type id, or date to search">
                             </div>
                         </form>
                     </div>
 
                     <div class="card-body">
+
+                        <div *ngIf="eegs.length === 0">
+                            <br/>
+                            <br/>
+                            <h4 class="font-italic text-gray text-center">No saved EEGs</h4>
+                        </div>
                         <!-- Individual eeg display -->
                         <div class="alert" *ngIf="isShowEEG.valueOf()">
                             <button mat-raised-button type="button" matTooltip="Close"
@@ -42,7 +45,7 @@
                             <div class="card-avatar text-center">
                                 <p>
                                     <a href="javascript:void(0)">
-                                        <img class="img" src="./assets/img/1.jpg"/>
+                                        <img class="img col-md-10 text-center" [src]="showingEEG.signalImage"/>
                                     </a>
                                 </p>
                             </div>
@@ -67,12 +70,12 @@
                                 <th> Recorded Date</th>
                                 <th> Actions</th>
                                 </thead>
-                                <tbody class="text-center" *ngFor="let eeg of eegs">
-                                <tr>
+                                <tbody class="text-center">
+                                <tr *ngFor="let eeg of eegs | filter:searchText">
                                     <td>{{eeg.id}}</td>
                                     <td>{{eeg.subjectId}}</td>
-                                    <td>{{eeg.duration}} (Will be added)</td>
-                                    <td>{{eeg.recordedDate}} (Will be added)</td>
+                                    <td>{{eeg.duration}}</td>
+                                    <td>{{eeg.recordedDate}}</td>
                                     <td class="text-primary">
                                         <button mat-raised-button type="button" matTooltip="Show Results"
                                                 [matTooltipPosition]="'above'" (click)="onViewEEG(eeg)"
